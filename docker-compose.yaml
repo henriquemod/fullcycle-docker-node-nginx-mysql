@@ -9,8 +9,6 @@ services:
     container_name: db
     restart: always
     tty: true
-    volumes:
-      - ./mysql:/var/lib/mysql
     environment:
       - MYSQL_DATABASE=fullcycle-docker
       - MYSQL_ROOT_PASSWORD=root

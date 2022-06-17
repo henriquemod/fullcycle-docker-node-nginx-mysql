@@ -10,7 +10,10 @@ const config = {
 const mysql = require("mysql");
 
 app.get("/", (_, res) => {
+  let people = [];
   const connection = mysql.createConnection(config);
+  const createTableSql = `create table if not exists people(id INT NOT NULL AUTO_INCREMENT,name VARCHAR(255) NOT NULL,PRIMARY KEY ( id ));`;
+  connection.query(createTableSql);
   const insert = `INSERT INTO people(name) values('Henrique')`;
   connection.query(insert);
   connection.query(
@@ -20,8 +23,17 @@ app.get("/", (_, res) => {
       values: ["Henrique"],
     },
     (_, results) => {
-      console.log(results);
-      res.send(`<h1>Full Cycle</h1><br><h2>Ola ${results[0].name}</h2>`);
+      if (results) {
+        for (let i = 0; i < results.length; i++) {
+          people = people + `<li>${results[i].name}</li>`;
+        }
+      }
+      res.send(`
+      <h1>Full Cycle</h1>
+      <ul>
+        ${people}
+      </ul>
+      `);
     }
   );
 
