@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+
+  db:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    platform: linux/x86_64
+    container_name: db
+    restart: always
+    tty: true
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=fullcycle-docker
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - node-net
+
+  app:
+    build:
+      context: ./node
+    container_name: app
+    image: henriquemod/node
+    networks:
+      - node-net
+    tty: true
+    restart: always
+    depends_on:
+      - db
+
+  nginx:
+    build:
+      context: ./nginx
+    container_name: nginx
+    image: henriquemod/nginx
+    networks:
+      - node-net
+    depends_on:
+      - app
+    ports:
+      - "8080:80"
+    tty: true
+    restart: always
+
+networks:
+  node-net:
+    driver: bridge
